@@ -22,25 +22,3 @@ A modern, clean UI for visualizing savings and investment returns over time.
    npm start
    ```
 4. Open [http://localhost:3000](http://localhost:3000) in your browser
-
-## Technologies Used
-
-- React
-- Recharts for data visualization
-- Styled Components for styling
-
-## Usage
-
-1. Enter your current financial information:
-   - Current investments (£)
-   - Monthly savings amount (£)
-   - Current debts (£)
-   - Expected annual return rate (%)
-   - Expected inflation rate (%)
-   - Number of years to project
-
-2. The chart will automatically update to show your projected net worth over time.
-
-3. Toggle between nominal and inflation-adjusted values to see the real impact of inflation.
-
-4. View the summary statistics to understand key aspects of your investment journey. 

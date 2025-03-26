@@ -14,6 +14,18 @@ const SummaryTitle = styled.h2`
   color: #1f2937;
 `;
 
+const SummarySection = styled.div`
+  margin-bottom: 2rem;
+`;
+
+const SectionTitle = styled.h3`
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  color: #4b5563;
+`;
+
 const BattleContainer = styled.div`
   margin-bottom: 2rem;
   padding: 1rem;
@@ -83,6 +95,12 @@ const StatValue = styled.div`
   color: #1f2937;
 `;
 
+const StatDetail = styled.div`
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+`;
+
 const ChangeIndicator = styled.span`
   font-size: 0.875rem;
   color: ${props => props.positive ? '#10b981' : '#ef4444'};
@@ -110,6 +128,12 @@ const Summary = ({ data, formValues }) => {
   const finalNetWorth = finalData.netWorth;
   const finalRealNetWorth = finalData.realNetWorth;
 
+  const initialMortgage = initialData.mortgageRemaining;
+  const finalMortgage = finalData.mortgageRemaining;
+  const totalMortgageInterest = finalData.mortgageInterestPaid;
+  const totalMortgagePrincipal = finalData.mortgagePrincipalPaid;
+  const monthlyMortgagePayment = initialData.mortgagePayment;
+
   const netWorthGrowth = finalNetWorth - initialNetWorth;
   const netWorthGrowthPercentage = (netWorthGrowth / Math.abs(initialNetWorth)) * 100;
 
@@ -131,67 +155,141 @@ const Summary = ({ data, formValues }) => {
       ? `Inflation is eroding your gains by ${formatPercentage(inflationImpactPercentage - returnOnInvestment)}`
       : 'Your investments are just keeping pace with inflation';
 
+  // Calculate mortgage statistics
+  const mortgageFullyPaid = finalMortgage <= 0;
+  const mortgageYearsPaid = formValues.mortgageTerm - (mortgageFullyPaid ? 0 : Math.min(formValues.mortgageTerm, (finalMortgage / initialMortgage) * formValues.mortgageTerm));
+  const mortgagePercentagePaid = ((initialMortgage - finalMortgage) / initialMortgage) * 100;
+  const interestToLoanRatio = (totalMortgageInterest / initialMortgage) * 100;
+
   return (
     <SummaryContainer>
-      <SummaryTitle>Investment Summary</SummaryTitle>
+      <SummaryTitle>Financial Summary</SummaryTitle>
 
-      <BattleContainer>
-        <BattleTitle>The Battle: Investment Growth vs. Inflation</BattleTitle>
-        <BattleVisual>
-          <BattleSide color="#10b981">
-            Investment Returns: {formatPercentage(returnOnInvestment)}
-          </BattleSide>
-          <BattleVs>VS</BattleVs>
-          <BattleSide color="#ef4444">
-            Inflation Impact: {formatPercentage(inflationImpactPercentage)}
-          </BattleSide>
-        </BattleVisual>
-        <BattleResult winner={battleWinner}>
-          {battleResult}
-        </BattleResult>
-      </BattleContainer>
+      <SummarySection>
+        <SectionTitle>Investment & Inflation Dynamics</SectionTitle>
+        <BattleContainer>
+          <BattleTitle>The Battle: Investment Growth vs. Inflation</BattleTitle>
+          <BattleVisual>
+            <BattleSide color="#10b981">
+              Investment Returns: {formatPercentage(returnOnInvestment)}
+            </BattleSide>
+            <BattleVs>VS</BattleVs>
+            <BattleSide color="#ef4444">
+              Inflation Impact: {formatPercentage(inflationImpactPercentage)}
+            </BattleSide>
+          </BattleVisual>
+          <BattleResult winner={battleWinner}>
+            {battleResult}
+          </BattleResult>
+        </BattleContainer>
 
-      <StatsGrid>
-        <StatCard highlight color="#3b82f6">
-          <StatLabel>Final Net Worth</StatLabel>
-          <StatValue>
-            {formatCurrency(finalNetWorth)}
-            <ChangeIndicator positive={netWorthGrowth > 0}>
-              {netWorthGrowth > 0 ? '↑' : '↓'} {formatPercentage(netWorthGrowthPercentage)}
-            </ChangeIndicator>
-          </StatValue>
-        </StatCard>
+        <StatsGrid>
+          <StatCard highlight color="#3b82f6">
+            <StatLabel>Final Net Worth</StatLabel>
+            <StatValue>
+              {formatCurrency(finalNetWorth)}
+              <ChangeIndicator positive={netWorthGrowth > 0}>
+                {netWorthGrowth > 0 ? '↑' : '↓'} {formatPercentage(netWorthGrowthPercentage)}
+              </ChangeIndicator>
+            </StatValue>
+          </StatCard>
 
-        <StatCard color="#6366f1">
-          <StatLabel>Final Real Net Worth (Today's Money)</StatLabel>
-          <StatValue>{formatCurrency(finalRealNetWorth)}</StatValue>
-        </StatCard>
+          <StatCard color="#6366f1">
+            <StatLabel>Final Real Net Worth (Today's Money)</StatLabel>
+            <StatValue>{formatCurrency(finalRealNetWorth)}</StatValue>
+          </StatCard>
 
-        <StatCard color="#10b981">
-          <StatLabel>Total Contributions</StatLabel>
-          <StatValue>{formatCurrency(totalContributions)}</StatValue>
-        </StatCard>
+          <StatCard color="#10b981">
+            <StatLabel>Total Savings Contributed</StatLabel>
+            <StatValue>{formatCurrency(totalContributions)}</StatValue>
+          </StatCard>
 
-        <StatCard color="#8b5cf6">
-          <StatLabel>Total Investment Returns</StatLabel>
-          <StatValue>{formatCurrency(totalReturns)}</StatValue>
-        </StatCard>
+          <StatCard color="#8b5cf6">
+            <StatLabel>Total Investment Returns</StatLabel>
+            <StatValue>{formatCurrency(totalReturns)}</StatValue>
+          </StatCard>
 
-        <StatCard color="#f59e0b">
-          <StatLabel>Return on Investment</StatLabel>
-          <StatValue>{formatPercentage(returnOnInvestment)}</StatValue>
-        </StatCard>
+          <StatCard color="#f59e0b">
+            <StatLabel>Return on Investment</StatLabel>
+            <StatValue>{formatPercentage(returnOnInvestment)}</StatValue>
+          </StatCard>
 
-        <StatCard color="#ef4444">
-          <StatLabel>Inflation's Impact</StatLabel>
-          <StatValue>
-            {formatCurrency(inflationImpact)}
-            <ChangeIndicator positive={false}>
-              {formatPercentage(inflationImpactPercentage)}
-            </ChangeIndicator>
-          </StatValue>
-        </StatCard>
-      </StatsGrid>
+          <StatCard color="#ef4444">
+            <StatLabel>Inflation's Impact</StatLabel>
+            <StatValue>
+              {formatCurrency(inflationImpact)}
+              <ChangeIndicator positive={false}>
+                {formatPercentage(inflationImpactPercentage)}
+              </ChangeIndicator>
+            </StatValue>
+          </StatCard>
+        </StatsGrid>
+      </SummarySection>
+
+      <SummarySection>
+        <SectionTitle>Mortgage Analysis</SectionTitle>
+        <StatsGrid>
+          <StatCard highlight color="#ef4444">
+            <StatLabel>Mortgage Status</StatLabel>
+            <StatValue>
+              {mortgageFullyPaid
+                ? 'Fully Paid Off!'
+                : `${formatPercentage(mortgagePercentagePaid)} Paid`}
+            </StatValue>
+            <StatDetail>
+              {mortgageFullyPaid
+                ? `Paid off in ${Math.ceil(mortgageYearsPaid)} years`
+                : `£${finalMortgage.toLocaleString()} remaining after ${formValues.years} years`}
+            </StatDetail>
+          </StatCard>
+
+          <StatCard color="#f59e0b">
+            <StatLabel>Monthly Payment</StatLabel>
+            <StatValue>{formatCurrency(monthlyMortgagePayment)}</StatValue>
+            <StatDetail>
+              {`That's £${(monthlyMortgagePayment * 12).toLocaleString()} per year`}
+            </StatDetail>
+          </StatCard>
+
+          <StatCard color="#fcd34d">
+            <StatLabel>Total Interest Cost</StatLabel>
+            <StatValue>{formatCurrency(totalMortgageInterest)}</StatValue>
+            <StatDetail>
+              {`${formatPercentage(interestToLoanRatio)} of original loan amount`}
+            </StatDetail>
+          </StatCard>
+
+          <StatCard color="#4ade80">
+            <StatLabel>Principal Paid</StatLabel>
+            <StatValue>{formatCurrency(totalMortgagePrincipal)}</StatValue>
+            <StatDetail>
+              {finalMortgage > 0
+                ? `${formatCurrency(finalMortgage)} still to pay`
+                : 'Mortgage fully paid off!'}
+            </StatDetail>
+          </StatCard>
+
+          <StatCard color="#3b82f6">
+            <StatLabel>Interest to Principal Ratio</StatLabel>
+            <StatValue>{(totalMortgageInterest / totalMortgagePrincipal).toFixed(2)}</StatValue>
+            <StatDetail>
+              For every £1 of principal, you pay £{(totalMortgageInterest / totalMortgagePrincipal).toFixed(2)} in interest
+            </StatDetail>
+          </StatCard>
+
+          <StatCard color="#8b5cf6">
+            <StatLabel>Years to Pay Off</StatLabel>
+            <StatValue>
+              {Math.ceil(mortgageYearsPaid)}
+              {mortgageFullyPaid && formValues.mortgageTerm > mortgageYearsPaid && (
+                <ChangeIndicator positive={true}>
+                  {Math.ceil(formValues.mortgageTerm - mortgageYearsPaid)} years early!
+                </ChangeIndicator>
+              )}
+            </StatValue>
+          </StatCard>
+        </StatsGrid>
+      </SummarySection>
     </SummaryContainer>
   );
 };
