@@ -44,6 +44,8 @@ const Input = styled.input`
   border-radius: 6px;
   font-size: 1rem;
   transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
 
   &:focus {
     outline: none;
@@ -54,6 +56,7 @@ const Input = styled.input`
 
 const InputPrefix = styled.div`
   position: relative;
+  width: 100%;
   
   &::before {
     content: "${props => props.prefix}";
@@ -67,11 +70,13 @@ const InputPrefix = styled.div`
   
   input {
     padding-left: ${props => props.prefix ? '1.75rem' : '0.75rem'};
+    width: 100%;
   }
 `;
 
 const InputSuffix = styled.div`
   position: relative;
+  width: 100%;
   
   &::after {
     content: "${props => props.suffix}";
@@ -81,10 +86,19 @@ const InputSuffix = styled.div`
     transform: translateY(-50%);
     color: #6b7280;
     z-index: 1;
+    pointer-events: none;
   }
   
   input {
     padding-right: ${props => props.suffix ? '1.75rem' : '0.75rem'};
+    width: 100%;
+    appearance: textfield;
+    -moz-appearance: textfield;
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
   }
 `;
 
