@@ -29,6 +29,7 @@ export const calculateInvestmentGrowth = (values) => {
     investmentValue: investmentValue,
     debt: debt,
     realNetWorth: netWorth, // Adjusted for inflation
+    inflationLoss: 0, // Amount "lost" to inflation
     contributions: 0, // Total contributions over time
     returns: 0 // Total returns over time
   });
@@ -55,6 +56,9 @@ export const calculateInvestmentGrowth = (values) => {
     // Real values adjusted for inflation
     const realNetWorth = netWorth / inflationFactor;
 
+    // Calculate inflation impact ("loss")
+    const inflationLoss = netWorth - realNetWorth;
+
     // Add to data array only at year marks or at the final month
     if (month % 12 === 0 || month === totalMonths) {
       const year = Math.floor(month / 12);
@@ -65,6 +69,7 @@ export const calculateInvestmentGrowth = (values) => {
         investmentValue: Math.round(investmentValue),
         debt: Math.round(debt),
         realNetWorth: Math.round(realNetWorth),
+        inflationLoss: Math.round(inflationLoss),
         contributions: Math.round(totalContributions),
         returns: Math.round(totalReturns)
       });

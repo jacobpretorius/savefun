@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import {
   ResponsiveContainer,
@@ -9,7 +9,9 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ReferenceLine
+  ReferenceLine,
+  Area,
+  ComposedChart
 } from 'recharts';
 
 const ChartContainer = styled.div`
@@ -26,25 +28,10 @@ const ChartTitle = styled.h2`
   color: #1f2937;
 `;
 
-const ChartOptions = styled.div`
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-`;
-
-const ToggleButton = styled.button`
-  background-color: ${props => props.active ? '#3b82f6' : '#e5e7eb'};
-  color: ${props => props.active ? 'white' : '#4b5563'};
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: ${props => props.active ? '#2563eb' : '#d1d5db'};
-  }
+const ChartSubtitle = styled.p`
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 1.5rem;
 `;
 
 const formatCurrency = (value) => {
@@ -74,13 +61,12 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 const InvestmentChart = ({ data }) => {
-  const [showRealValues, setShowRealValues] = useState(false);
-
   // Format data for the chart
   const chartData = data.map(item => ({
     year: item.year,
     "Net Worth": item.netWorth,
     "Real Net Worth": item.realNetWorth,
+    "Inflation Loss": item.inflationLoss,
     "Investments": item.investmentValue,
     "Debt": item.debt,
     "Contributions": item.contributions,
@@ -90,24 +76,12 @@ const InvestmentChart = ({ data }) => {
   return (
     <ChartContainer>
       <ChartTitle>Wealth Growth Projection</ChartTitle>
-
-      <ChartOptions>
-        <ToggleButton
-          active={!showRealValues}
-          onClick={() => setShowRealValues(false)}
-        >
-          Nominal Values
-        </ToggleButton>
-        <ToggleButton
-          active={showRealValues}
-          onClick={() => setShowRealValues(true)}
-        >
-          Inflation Adjusted
-        </ToggleButton>
-      </ChartOptions>
+      <ChartSubtitle>
+        See how your investments grow over time and the impact of inflation on your wealth
+      </ChartSubtitle>
 
       <ResponsiveContainer width="100%" height={400}>
-        <LineChart
+        <ComposedChart
           data={chartData}
           margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
         >
@@ -124,25 +98,34 @@ const InvestmentChart = ({ data }) => {
           <Legend />
           <ReferenceLine y={0} stroke="#64748b" />
 
-          {showRealValues ? (
-            <Line
-              type="monotone"
-              dataKey="Real Net Worth"
-              stroke="#3b82f6"
-              strokeWidth={3}
-              dot={false}
-              activeDot={{ r: 8 }}
-            />
-          ) : (
-            <Line
-              type="monotone"
-              dataKey="Net Worth"
-              stroke="#3b82f6"
-              strokeWidth={3}
-              dot={false}
-              activeDot={{ r: 8 }}
-            />
-          )}
+          <Line
+            type="monotone"
+            dataKey="Net Worth"
+            stroke="#3b82f6"
+            strokeWidth={3}
+            dot={false}
+            activeDot={{ r: 8 }}
+            name="Net Worth (Nominal)"
+          />
+
+          <Line
+            type="monotone"
+            dataKey="Real Net Worth"
+            stroke="#8b5cf6"
+            strokeWidth={3}
+            dot={false}
+            activeDot={{ r: 8 }}
+            name="Real Net Worth (Today's Money)"
+          />
+
+          <Area
+            type="monotone"
+            dataKey="Inflation Loss"
+            fill="#fca5a5"
+            stroke="#ef4444"
+            fillOpacity={0.3}
+            name="Value Lost to Inflation"
+          />
 
           <Line
             type="monotone"
@@ -159,7 +142,7 @@ const InvestmentChart = ({ data }) => {
             strokeWidth={2}
             dot={false}
           />
-        </LineChart>
+        </ComposedChart>
       </ResponsiveContainer>
     </ChartContainer>
   );

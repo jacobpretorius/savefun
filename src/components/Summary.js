@@ -10,8 +10,52 @@ const SummaryContainer = styled.div`
 
 const SummaryTitle = styled.h2`
   font-size: 1.25rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   color: #1f2937;
+`;
+
+const BattleContainer = styled.div`
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border-radius: 8px;
+`;
+
+const BattleTitle = styled.h3`
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: #4b5563;
+`;
+
+const BattleVisual = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+`;
+
+const BattleSide = styled.div`
+  flex: 1;
+  padding: 1rem;
+  border-radius: 6px;
+  text-align: center;
+  background-color: ${props => props.color || '#f3f4f6'};
+  color: white;
+  font-weight: 600;
+`;
+
+const BattleVs = styled.div`
+  padding: 0 1rem;
+  font-weight: 700;
+  color: #6b7280;
+`;
+
+const BattleResult = styled.div`
+  padding: 0.75rem;
+  border-radius: 6px;
+  text-align: center;
+  background-color: ${props => props.winner === 'investments' ? '#dcfce7' : props.winner === 'inflation' ? '#fee2e2' : '#f3f4f6'};
+  color: ${props => props.winner === 'investments' ? '#166534' : props.winner === 'inflation' ? '#991b1b' : '#4b5563'};
+  font-weight: 600;
 `;
 
 const StatsGrid = styled.div`
@@ -74,9 +118,38 @@ const Summary = ({ data, formValues }) => {
 
   const returnOnInvestment = (totalReturns / totalContributions) * 100;
 
+  // Determine who's winning the battle
+  const battleWinner = inflationImpactPercentage > returnOnInvestment
+    ? 'inflation'
+    : returnOnInvestment > inflationImpactPercentage
+      ? 'investments'
+      : 'tie';
+
+  const battleResult = battleWinner === 'investments'
+    ? `Your investments are outpacing inflation by ${formatPercentage(returnOnInvestment - inflationImpactPercentage)}`
+    : battleWinner === 'inflation'
+      ? `Inflation is eroding your gains by ${formatPercentage(inflationImpactPercentage - returnOnInvestment)}`
+      : 'Your investments are just keeping pace with inflation';
+
   return (
     <SummaryContainer>
       <SummaryTitle>Investment Summary</SummaryTitle>
+
+      <BattleContainer>
+        <BattleTitle>The Battle: Investment Growth vs. Inflation</BattleTitle>
+        <BattleVisual>
+          <BattleSide color="#10b981">
+            Investment Returns: {formatPercentage(returnOnInvestment)}
+          </BattleSide>
+          <BattleVs>VS</BattleVs>
+          <BattleSide color="#ef4444">
+            Inflation Impact: {formatPercentage(inflationImpactPercentage)}
+          </BattleSide>
+        </BattleVisual>
+        <BattleResult winner={battleWinner}>
+          {battleResult}
+        </BattleResult>
+      </BattleContainer>
 
       <StatsGrid>
         <StatCard highlight color="#3b82f6">
@@ -87,6 +160,11 @@ const Summary = ({ data, formValues }) => {
               {netWorthGrowth > 0 ? '↑' : '↓'} {formatPercentage(netWorthGrowthPercentage)}
             </ChangeIndicator>
           </StatValue>
+        </StatCard>
+
+        <StatCard color="#6366f1">
+          <StatLabel>Final Real Net Worth (Today's Money)</StatLabel>
+          <StatValue>{formatCurrency(finalRealNetWorth)}</StatValue>
         </StatCard>
 
         <StatCard color="#10b981">
@@ -105,18 +183,13 @@ const Summary = ({ data, formValues }) => {
         </StatCard>
 
         <StatCard color="#ef4444">
-          <StatLabel>Impact of Inflation</StatLabel>
+          <StatLabel>Inflation's Impact</StatLabel>
           <StatValue>
             {formatCurrency(inflationImpact)}
             <ChangeIndicator positive={false}>
               {formatPercentage(inflationImpactPercentage)}
             </ChangeIndicator>
           </StatValue>
-        </StatCard>
-
-        <StatCard color="#6366f1">
-          <StatLabel>Final Real Net Worth</StatLabel>
-          <StatValue>{formatCurrency(finalRealNetWorth)}</StatValue>
         </StatCard>
       </StatsGrid>
     </SummaryContainer>
