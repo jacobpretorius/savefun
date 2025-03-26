@@ -177,7 +177,6 @@ const InputForm = ({ values, onChange }) => {
             value={values.returnRate}
             onChange={handleChange}
             min="0"
-            max="30"
             step="0.1"
           />
         </InputSuffix>
@@ -212,7 +211,6 @@ const InputForm = ({ values, onChange }) => {
             value={values.mortgageInterestRate}
             onChange={handleChange}
             min="0"
-            max="20"
             step="0.1"
           />
         </InputSuffix>
@@ -227,7 +225,6 @@ const InputForm = ({ values, onChange }) => {
           value={values.mortgageTerm}
           onChange={handleChange}
           min="1"
-          max="40"
           step="1"
         />
       </InputGroup>
@@ -251,7 +248,6 @@ const InputForm = ({ values, onChange }) => {
             value={values.inflationRate}
             onChange={handleChange}
             min="0"
-            max="20"
             step="0.1"
           />
         </InputSuffix>
@@ -266,7 +262,6 @@ const InputForm = ({ values, onChange }) => {
           value={values.years}
           onChange={handleChange}
           min="1"
-          max="50"
           step="1"
         />
       </InputGroup>
@@ -280,7 +275,6 @@ const InputForm = ({ values, onChange }) => {
           value={values.startYear}
           onChange={handleChange}
           min="2000"
-          max="2999"
           step="1"
         />
       </InputGroup>

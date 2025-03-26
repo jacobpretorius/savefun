@@ -61,6 +61,24 @@ const CopyConfirmation = styled.div`
   z-index: 100;
 `;
 
+const Disclaimer = styled.p`
+  text-align: center;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f3f4f6;
+`;
+
+const DisclaimerLink = styled.a`
+  color: #9ca3af;
+  text-decoration: underline;
+  
+  &:hover {
+    color: #6b7280;
+  }
+`;
+
 const defaultValues = {
   currentInvestments: 10000,
   monthlySavings: 500,
@@ -154,12 +172,16 @@ function App() {
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
           <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z" />
         </svg>
-        Copy Current Settings
+        Share Current Settings
       </ShareButton>
 
       <InvestmentChart data={chartData} startYear={formValues.startYear} />
 
       <Summary data={chartData} formValues={formValues} />
+
+      <Disclaimer>
+        This visualization was created with AI so may contain errors. Please let me know if you think it does <DisclaimerLink href="https://bsky.app/profile/jacob.earth" target="_blank" rel="noopener noreferrer">@jacob.earth</DisclaimerLink>
+      </Disclaimer>
     </AppContainer>
   );
 }
