@@ -92,13 +92,6 @@ const InputSuffix = styled.div`
   input {
     padding-right: ${props => props.suffix ? '1.75rem' : '0.75rem'};
     width: 100%;
-    appearance: textfield;
-    -moz-appearance: textfield;
-    &::-webkit-outer-spin-button,
-    &::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
   }
 `;
 
@@ -220,7 +213,7 @@ const InputForm = ({ values, onChange }) => {
             onChange={handleChange}
             min="0"
             max="20"
-            step="0.01"
+            step="0.1"
           />
         </InputSuffix>
       </InputGroup>
