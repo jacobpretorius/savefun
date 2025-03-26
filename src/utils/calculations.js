@@ -48,7 +48,7 @@ export const calculateInvestmentGrowth = (values) => {
     mortgageRemaining: mortgageRemaining,
     mortgagePayment: monthlyMortgagePayment,
     realNetWorth: netWorth, // Adjusted for inflation
-    inflationLoss: 0, // Amount "lost" to inflation
+    inflationImpact: 0, // Impact of inflation (can be positive or negative)
     contributions: 0, // Total contributions over time
     returns: 0, // Total returns over time
     mortgageInterestPaid: 0, // Total mortgage interest paid
@@ -101,8 +101,10 @@ export const calculateInvestmentGrowth = (values) => {
     // Real values adjusted for inflation
     const realNetWorth = netWorth / inflationFactor;
 
-    // Calculate inflation impact ("loss")
-    const inflationLoss = netWorth - realNetWorth;
+    // Calculate inflation impact (can be positive or negative)
+    // When net worth is positive, inflation erodes value (positive impact/loss)
+    // When net worth is negative, inflation reduces debt burden (negative impact/gain)
+    const inflationImpact = netWorth - realNetWorth;
 
     // Add to data array only at year marks or at the final month
     if (month % 12 === 0 || month === totalMonths) {
@@ -115,7 +117,7 @@ export const calculateInvestmentGrowth = (values) => {
         mortgageRemaining: Math.round(mortgageRemaining),
         mortgagePayment: Math.round(monthlyMortgagePayment),
         realNetWorth: Math.round(realNetWorth),
-        inflationLoss: Math.round(inflationLoss),
+        inflationImpact: Math.round(inflationImpact),
         contributions: Math.round(totalContributions),
         returns: Math.round(totalReturns),
         mortgageInterestPaid: Math.round(totalMortgageInterest),

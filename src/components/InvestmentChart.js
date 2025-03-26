@@ -74,11 +74,23 @@ const CustomTooltip = ({ active, payload, label, startYear }) => {
         <p style={{ margin: '0 0 0.5rem', fontWeight: 'bold' }}>
           {`Year ${label} (${calendarYear})`}
         </p>
-        {payload.map((entry, index) => (
-          <p key={`item-${index}`} style={{ margin: '0.25rem 0', color: entry.color }}>
-            {`${entry.name}: ${formatCurrency(entry.value)}`}
-          </p>
-        ))}
+        {payload.map((entry, index) => {
+          // Special handling for inflation impact
+          if (entry.name === "Inflation Impact") {
+            const isNegative = entry.value < 0;
+            return (
+              <p key={`item-${index}`} style={{ margin: '0.25rem 0', color: isNegative ? '#10b981' : entry.color }}>
+                {`${entry.name}: ${formatCurrency(Math.abs(entry.value))} ${isNegative ? '(benefit)' : '(loss)'}`}
+              </p>
+            );
+          }
+
+          return (
+            <p key={`item-${index}`} style={{ margin: '0.25rem 0', color: entry.color }}>
+              {`${entry.name}: ${formatCurrency(entry.value)}`}
+            </p>
+          );
+        })}
       </div>
     );
   }
@@ -107,7 +119,7 @@ const InvestmentChart = ({ data, startYear }) => {
     // Wealth data
     "Net Worth": item.netWorth,
     "Real Net Worth": item.realNetWorth,
-    "Inflation Loss": item.inflationLoss,
+    "Inflation Impact": item.inflationImpact,
     "Investments": item.investmentValue,
     // Mortgage data
     "Mortgage Remaining": item.mortgageRemaining,
@@ -179,13 +191,35 @@ const InvestmentChart = ({ data, startYear }) => {
               name="Real Net Worth (Today's Money)"
             />
 
+            {/* Use defs and pattern to create different styles for positive/negative values */}
+            <defs>
+              <linearGradient id="inflationLossGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#fca5a5" stopOpacity={0.3} />
+              </linearGradient>
+              <linearGradient id="inflationBenefitGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#a7f3d0" stopOpacity={0.3} />
+              </linearGradient>
+            </defs>
+
+            {/* Use two areas to show loss and benefit with different colors */}
             <Area
               type="monotone"
-              dataKey="Inflation Loss"
-              fill="#fca5a5"
+              dataKey={(dataPoint) => dataPoint["Inflation Impact"] > 0 ? dataPoint["Inflation Impact"] : 0}
+              fill="url(#inflationLossGradient)"
               stroke="#ef4444"
               fillOpacity={0.3}
-              name="Value Lost to Inflation"
+              name="Inflation Loss"
+            />
+
+            <Area
+              type="monotone"
+              dataKey={(dataPoint) => dataPoint["Inflation Impact"] < 0 ? -dataPoint["Inflation Impact"] : 0}
+              fill="url(#inflationBenefitGradient)"
+              stroke="#10b981"
+              fillOpacity={0.3}
+              name="Inflation Benefit"
             />
 
             <Line

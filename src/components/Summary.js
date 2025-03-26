@@ -137,8 +137,8 @@ const Summary = ({ data, formValues }) => {
   const netWorthGrowth = finalNetWorth - initialNetWorth;
   const netWorthGrowthPercentage = (netWorthGrowth / Math.abs(initialNetWorth)) * 100;
 
-  const inflationImpact = finalNetWorth - finalRealNetWorth;
-  const inflationImpactPercentage = (inflationImpact / finalNetWorth) * 100;
+  const inflationLoss = finalNetWorth - finalRealNetWorth;
+  const inflationImpactPercentage = (inflationLoss / finalNetWorth) * 100;
 
   const returnOnInvestment = (totalReturns / totalContributions) * 100;
 
@@ -174,12 +174,15 @@ const Summary = ({ data, formValues }) => {
               Investment Returns: {formatPercentage(returnOnInvestment)}
             </BattleSide>
             <BattleVs>VS</BattleVs>
-            <BattleSide color="#ef4444">
-              Inflation Impact: {formatPercentage(inflationImpactPercentage)}
+            <BattleSide color={inflationLoss >= 0 ? "#ef4444" : "#10b981"}>
+              Inflation Impact: {formatPercentage(Math.abs(inflationImpactPercentage))}
+              {inflationLoss < 0 ? " (Benefit)" : ""}
             </BattleSide>
           </BattleVisual>
           <BattleResult winner={battleWinner}>
-            {battleResult}
+            {finalNetWorth < 0
+              ? "While in debt, inflation helps by reducing the real value of your debt"
+              : battleResult}
           </BattleResult>
         </BattleContainer>
 
@@ -217,11 +220,27 @@ const Summary = ({ data, formValues }) => {
           <StatCard color="#ef4444">
             <StatLabel>Inflation's Impact</StatLabel>
             <StatValue>
-              {formatCurrency(inflationImpact)}
-              <ChangeIndicator positive={false}>
-                {formatPercentage(inflationImpactPercentage)}
-              </ChangeIndicator>
+              {inflationLoss >= 0 ? (
+                <>
+                  {formatCurrency(inflationLoss)}
+                  <ChangeIndicator positive={false}>
+                    {formatPercentage(inflationImpactPercentage)}
+                  </ChangeIndicator>
+                </>
+              ) : (
+                <>
+                  {formatCurrency(Math.abs(inflationLoss))}
+                  <ChangeIndicator positive={true}>
+                    Benefit
+                  </ChangeIndicator>
+                </>
+              )}
             </StatValue>
+            <StatDetail>
+              {inflationLoss >= 0
+                ? "Value eroded by inflation"
+                : "Inflation reducing your debt burden"}
+            </StatDetail>
           </StatCard>
         </StatsGrid>
       </SummarySection>
