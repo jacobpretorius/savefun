@@ -180,7 +180,7 @@ function App() {
       <Summary data={chartData} formValues={formValues} />
 
       <Disclaimer>
-        This visualization was created with AI so may contain errors. Please let me know if you think it does <DisclaimerLink href="https://bsky.app/profile/jacob.earth" target="_blank" rel="noopener noreferrer">@jacob.earth</DisclaimerLink>
+        This visualization was created with AI so may contain errors. Please let me know if you think it does <DisclaimerLink href="https://bsky.app/profile/jacob.earth" target="_blank" rel="noopener noreferrer">@jacob.earth</DisclaimerLink> or <DisclaimerLink href="https://github.com/jacobpretorius/savefun" target="_blank" rel="noopener noreferrer">open an issue on GitHub</DisclaimerLink>
       </Disclaimer>
     </AppContainer>
   );
